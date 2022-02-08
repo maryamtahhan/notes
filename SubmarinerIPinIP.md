@@ -82,8 +82,17 @@ you can connect to the gateway pod/container using:
 kubectl exec -n submariner-operator --stdin --tty submariner-gateway-tkw4m  -- /bin/bash
 ```
 
-To setup an IP in IP interface on each cluster gateway do the following:
-Once in the pod, bring down the vxlan-tunnel interface and delete its IP address.
+*To setup an IP in IP interface on each cluster gateway do the following:*
+
+Once in the gateway pod, bring down the vxlan-tunnel interface and delete its IP address.
+
+It's also important to delete the Bridge FDB entries for the vxlan-tunnel on the gateways.
+
+```
+bridge fdb show
+bridge fdb del 00:00:00:00:00:00 dev vxlan-tunnel dst 172.18.0.8
+bridge fdb del 00:00:00:00:00:00 dev vxlan-tunnel dst 172.18.0.8
+```
 
 On Cluster1-worker:
 ```
@@ -103,7 +112,7 @@ ip route add 100.1.0.0/16 via 241.18.0.8 dev ipip0
 ip route add 10.1.0.0/16 via 241.18.0.8 dev ipip0
 ```
 
-ON BOTH NODES
+ON BOTH Cluster[X]-workers
 ```
 iptables -A INPUT -p 94 -j SUBMARINER-INPUT
 iptables -A SUBMARINER-INPUT -p 94 -j ACCEPT
