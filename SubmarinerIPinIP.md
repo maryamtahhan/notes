@@ -126,8 +126,4 @@ echo 2 > /proc/sys/net/ipv4/conf/ipip0/rp_filter
 
 Once this is done you should be able to ping from one tunnel endpoint to the other. Between Pods across clusters and even ping a service.
 
-**NOTE: SERVICE EXPORT works but it takes a short while to propagate the service from one cluster to another SUBCTL benchmarks however do not work.**
-
-
-
-
+**NOTE: SERVICE EXPORT and SUBCTL benchmarks however do not work yet.**
