@@ -101,6 +101,8 @@ ip link set ipip0 up
 ip addr add 240.18.0.8/8 dev ipip0
 ip route add 100.2.0.0/16 via 241.18.0.6 dev ipip0
 ip route add 10.2.0.0/16 via 241.18.0.6 dev ipip0
+iptables -t nat -A PREROUTING  -d 10.2.0.0/16 -j DNAT --to-destination 241.18.0.6
+iptables -t nat -A PREROUTING  -d 100.2.0.0/16 -j DNAT --to-destination 241.18.0.6
 ```
 
 On Cluster2-worker:
@@ -110,6 +112,8 @@ ip link set ipip0 up
 ip addr add 240.18.0.6/8 dev ipip0
 ip route add 100.1.0.0/16 via 241.18.0.8 dev ipip0
 ip route add 10.1.0.0/16 via 241.18.0.8 dev ipip0
+iptables -t nat -A PREROUTING  -d 10.1.0.0/16 -j DNAT --to-destination 241.18.0.8
+iptables -t nat -A PREROUTING  -d 100.1.0.0/16 -j DNAT --to-destination 241.18.0.8
 ```
 
 ON BOTH Cluster[X]-workers
@@ -120,9 +124,10 @@ iptables -A FORWARD -o ipip0 -j ACCEPT
 echo 2 > /proc/sys/net/ipv4/conf/ipip0/rp_filter
 ```
 
-Once this is done you should be able to ping from one tunnel endpoint to the other.
+Once this is done you should be able to ping from one tunnel endpoint to the other. Between Pods across clusters and even ping a service.
 
-NOTE: there's still an issue with this configuration as services can't be accessed across clusters.
+**NOTE: SERVICE EXPORT and CURL not working.**
+
 
 
 
