@@ -1,3 +1,3 @@
 # notes
 
-Just a general repo tp capture work notes
+Just a general repo to capture notes

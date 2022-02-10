@@ -82,8 +82,17 @@ you can connect to the gateway pod/container using:
 kubectl exec -n submariner-operator --stdin --tty submariner-gateway-tkw4m  -- /bin/bash
 ```
 
-To setup an IP in IP interface on each cluster gateway do the following:
-Once in the pod, bring down the vxlan-tunnel interface and delete its IP address.
+*To setup an IP in IP interface on each cluster gateway do the following:*
+
+Once in the gateway pod, bring down the vxlan-tunnel interface and delete its IP address.
+
+It's also important to delete the Bridge FDB entries for the vxlan-tunnel on the gateways.
+
+```
+bridge fdb show
+bridge fdb del 00:00:00:00:00:00 dev vxlan-tunnel dst 172.18.0.8
+bridge fdb del 00:00:00:00:00:00 dev vxlan-tunnel dst 172.18.0.8
+```
 
 On Cluster1-worker:
 ```
@@ -92,6 +101,8 @@ ip link set ipip0 up
 ip addr add 240.18.0.8/8 dev ipip0
 ip route add 100.2.0.0/16 via 241.18.0.6 dev ipip0
 ip route add 10.2.0.0/16 via 241.18.0.6 dev ipip0
+iptables -t nat -A PREROUTING  -d 10.2.0.0/16 -j DNAT --to-destination 241.18.0.6
+iptables -t nat -A PREROUTING  -d 100.2.0.0/16 -j DNAT --to-destination 241.18.0.6
 ```
 
 On Cluster2-worker:
@@ -101,9 +112,11 @@ ip link set ipip0 up
 ip addr add 240.18.0.6/8 dev ipip0
 ip route add 100.1.0.0/16 via 241.18.0.8 dev ipip0
 ip route add 10.1.0.0/16 via 241.18.0.8 dev ipip0
+iptables -t nat -A PREROUTING  -d 10.1.0.0/16 -j DNAT --to-destination 241.18.0.8
+iptables -t nat -A PREROUTING  -d 100.1.0.0/16 -j DNAT --to-destination 241.18.0.8
 ```
 
-ON BOTH NODES
+ON BOTH Cluster[X]-workers
 ```
 iptables -A INPUT -p 94 -j SUBMARINER-INPUT
 iptables -A SUBMARINER-INPUT -p 94 -j ACCEPT
@@ -111,9 +124,6 @@ iptables -A FORWARD -o ipip0 -j ACCEPT
 echo 2 > /proc/sys/net/ipv4/conf/ipip0/rp_filter
 ```
 
-Once this is done you should be able to ping from one tunnel endpoint to the other.
+Once this is done you should be able to ping from one tunnel endpoint to the other. Between Pods across clusters and even ping a service.
 
-NOTE: there's still an issue with this configuration as services can't be accessed across clusters.
-
-
-
+**NOTE: SERVICE EXPORT and SUBCTL benchmarks however do not work yet as this IPTABLES configuration is NAT-ing the packets heading to the remote cluster rather than encapping it.**
