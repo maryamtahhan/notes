@@ -1,4 +1,4 @@
-# Submariner VXLAN Cable Driver Overview
+# Submariner IPSEC Cable Driver Overview
 
 The following is a topology overview for a simple Submariner deployment deployed with the IPSEC cable Driver:
 
