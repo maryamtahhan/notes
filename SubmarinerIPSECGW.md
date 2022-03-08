@@ -1,4 +1,4 @@
-# Submariner VXLAN Cable Driver Overview
+# Submariner IPSEC Cable Driver Overview
 
 The following is a topology overview for a simple Submariner deployment deployed with the IPSEC cable Driver:
 
@@ -24,7 +24,9 @@ applied to a VXLAN deployment.
 
 ## Cluster Information
 ```
-[root@nfvsdn-06 submariner-operator]# subctl show all
+
+[submariner-operator]# subctl show all
+
 Cluster "cluster1"
  ✓ Showing Connections
 GATEWAY          CLUSTER   REMOTE IP   NAT  CABLE DRIVER  SUBNETS                    STATUS     RTT avg.
