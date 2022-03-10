@@ -211,6 +211,8 @@ You can verify connectivity and traffic flow across the tunnels by:
 
 2. Configure ipsec.conf on both clusters:
 
+   > **_NOTE:_** to use the default Submariner vxlan port replace `udp/vxlan` in the configurations below with `udp/4500`
+
    ```bash
    [root@cluster1-worker submariner]# cat /etc/ipsec.d/sub.conf
    conn transport-out
