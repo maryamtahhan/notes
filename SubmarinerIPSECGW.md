@@ -10,7 +10,7 @@ the IPSec cable Driver:
 
 The idea is to show a simple interaction (a ping from one pod in one cluster to another pod in a second cluster) when Submariner is used.
 
-![Submariner IPSec cable driver logical view](https://github.com/maryamtahhan/notes/blob/main/images/submariner/IPSec_GW.png)
+![Submariner IPSec cable driver logical view](/images/submariner/IPSEC_GW.png)
 
 Please note: 4 tunnels are established to allow for:
 
