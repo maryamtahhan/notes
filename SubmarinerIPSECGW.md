@@ -1,29 +1,34 @@
-# Submariner IPSEC Cable Driver Overview
+# Submariner IPSec Cable Driver Overview
 
-The following is a topology overview for a simple Submariner deployment deployed with the IPSEC cable Driver:
+The goal of this guide is to provide an overview of the IPSec cable driver in Submariner and its equivalent
+manual configuration. The following is a topology overview for a simple Submariner deployment deployed with
+the IPSec cable Driver:
 
-```
-make deploy using=lighthouse
+```bash
+# make deploy using=lighthouse
 ```
 
 The idea is to show a simple interaction (a ping from one pod in one cluster to another pod in a second cluster) when Submariner is used.
 
-![Submariner IPSEC cable driver logical view](https://github.com/maryamtahhan/notes/blob/main/images/submariner/IPSEC_GW.png)
+![Submariner IPSec cable driver logical view](https://github.com/maryamtahhan/notes/blob/main/images/submariner/IPSec_GW.png)
 
 Please note: 4 tunnels are established to allow for:
+
 - Pod subnet to Pod subnet connectivity
 - Pod subnet to Service subnet connectivity
 - Service subnet to Pod subnet connectivity
 - Service subnet to Service subnet connectivity
 
-# IPSEC manual configuration equivalent
-An equivalent IPSEC configuration to what submariner sets up is shown below, this configuration is
+## IPSec manual configuration equivalent - tunnel mode
+
+An equivalent IPSec configuration to what submariner sets up is shown below, this configuration is
 applied to a VXLAN deployment.
 
 > **_NOTE:_** you can apply the configuration below to a vxlan deployment to see it in action.
 
-## Cluster Information
-```
+### Cluster Information
+
+```bash
 [submariner-operator]# subctl show all
 Cluster "cluster1"
  ✓ Showing Connections
@@ -78,9 +83,9 @@ service-discovery               localhost:5000                                  
  ✓ Showing versions
 ```
 
-## Cluster 1 Gateway configuration
+### Cluster 1 Gateway configuration
 
-```
+```bash
 #[root@cluster1-worker submariner]# cat /etc/ipsec.d/submariner.conf
 conn test-vpn-svc
    also=tunnel
@@ -114,18 +119,19 @@ conn tunnel
    ike=aes_gcm-sha2;modp2048
    phase2alg=aes_gcm-null;modp2048
 ```
-Configure the IPSEC secret to use the PSK:
 
-```
+### Configure the IPSec secret on cluster 1
+
+Configure the IPSec secret to use the PSK:
+
+```bash
 [root@cluster2-worker submariner]# cat /etc/ipsec.d/test.secrets
 %any %any: PSK "yLvPmaM+/TxWHjkV5+upGHQWbwI+aif0ihchZpxght71zJFlXiKUBD31AXsLnGrt"
 ```
 
-> **_NOTE:_** to configure Transport mode replace type=tunnel in the configuration
-file with type=transport.
+### Cluster 2 Gateway configuration
 
-## Cluster 2 Gateway configuration
-```
+```bash
 [root@cluster2-worker submariner]# cat /etc/ipsec.d/submariner.conf
 conn test-vpn-svc
    also=tunnel
@@ -160,34 +166,145 @@ conn tunnel
    phase2alg=aes_gcm-null;modp2048
 ```
 
-Configure the IPSEC secret to use the PSK:
+### Configure the IPSec secret on cluster 2
 
-```
+Configure the IPSec secret to use the PSK by writing the PSK to /etc/ipsec.d/test.secrets
+
+```bash
 [root@cluster2-worker submariner]# cat /etc/ipsec.d/test.secrets
 %any %any: PSK "yLvPmaM+/TxWHjkV5+upGHQWbwI+aif0ihchZpxght71zJFlXiKUBD31AXsLnGrt"
 ```
 
-> **_NOTE:_** to configure Transport mode replace type=tunnel in the configuration
-file with type=transport.
+### Run Pluto on both gateways
 
-## Run Pluto on both gateways
-```
+```bash
 [root@cluster1-worker submariner]# pluto --stderrlog
 [root@cluster2-worker submariner]# pluto --stderrlog
 ```
 
-## IPSEC STATUS on the gateways
+### IPSec STATUS on the gateways
+
 You can see the state of the configured tunnels using:
-```
-ipsec whack --status
+
+```bash
+# ipsec whack --status
 ```
 
 To see the stats for the tunnels use:
-```
-ipsec whack --trafficstatus
+
+```bash
+#ipsec whack --trafficstatus
 ```
 
-## Verification
+### Verification
+
 You can verify connectivity and traffic flow across the tunnels by:
+
 - Bringing up two Pods and pinging from one Pod to another.
 - Or running the deployment verification steps from the [Submariner documentation](https://submariner.io/getting-started/quickstart/kind/#verify-deployment)
+
+## IPSec manual configuration - transport mode - VXLAN over IPSec
+
+> **_NOTE:_** This section assumes you've deployed Submariner with the VXLAN cable driver and adjusted the nattport to 4789
+
+1. Setup the secrets as shown above.
+
+2. Configure ipsec.conf on both clusters:
+
+   ```bash
+   [root@cluster1-worker submariner]# cat /etc/ipsec.d/sub.conf
+   conn transport-out
+      also=transport
+      leftprotoport=udp
+      rightprotoport=udp/vxlan
+      auto=start
+
+   conn transport-in
+      also=transport
+      leftprotoport=udp/vxlan
+      rightprotoport=udp
+      auto=start
+
+   conn transport
+   left=172.18.0.9
+   right=172.18.0.7
+   authby=secret
+   pfs=yes
+   rekey=yes
+   keyingtries=3
+   type=transport
+   ike=aes_gcm-sha2;modp2048
+   phase2alg=aes_gcm-null;modp2048
+   ```
+
+   ```bash
+   [root@cluster2-worker submariner]# cat /etc/ipsec.d/sub.conf
+   conn transport-out
+      also=transport
+      leftprotoport=udp
+      rightprotoport=udp/vxlan
+      auto=start
+
+   conn transport-in
+      also=transport
+      leftprotoport=udp/vxlan
+      rightprotoport=udp
+      auto=start
+
+   conn transport
+      left=172.18.0.7
+      right=172.18.0.9
+      authby=secret
+      pfs=yes
+      rekey=yes
+      keyingtries=3
+      type=transport
+      ike=aes_gcm-sha2;modp2048
+      phase2alg=aes_gcm-null;modp2048
+   ```
+
+3. Start Pluto and send traffic
+
+## IPSec manual configuration - transport mode - IP in IP over IPSec
+
+> **_NOTE:_** This section assumes you've deployed Submariner with the IPTun cable driver
+
+1. Setup the secrets as shown above.
+
+2. Configure ipsec.conf on both clusters:
+
+   ```bash
+   [root@cluster1-worker submariner]# cat /etc/ipsec.d/sub.conf
+   conn transport
+      left=172.18.0.9
+      right=172.18.0.7
+      leftprotoport=ipv4
+      rightprotoport=ipv4
+      authby=secret
+      pfs=yes
+      rekey=yes
+      keyingtries=3
+      type=transport
+      auto=start
+      ike=aes_gcm-sha2;modp2048
+      phase2alg=aes_gcm-null;modp2048
+   ```
+
+   ```bash
+   [root@cluster2-worker submariner]# cat /etc/ipsec.d/sub.conf
+   conn transport
+      left=172.18.0.7
+      right=172.18.0.9
+      leftprotoport=ipv4
+      rightprotoport=ipv4
+      authby=secret
+      pfs=yes
+      rekey=yes
+      keyingtries=3
+      type=transport
+      auto=start
+      ike=aes_gcm-sha2;modp2048
+      phase2alg=aes_gcm-null;modp2048
+   ```
+
+3. Start Pluto and send traffic

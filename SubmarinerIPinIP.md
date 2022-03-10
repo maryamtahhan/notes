@@ -1,12 +1,17 @@
+# Manually deploying Submariner with IP in IP
+
+The goal of this guide is to show how to replace the main vxlan-tunnel interface on the Submariner gateway with an 
+IP in IP interface.
+
 Deploy 2 VXLAN submariner clusters from submariner-operator using
 
-```
-make deploy using=vxlan,lighthouse
+```bash
+# make deploy using=vxlan,lighthouse
 ```
 
 This will produce 2 clusters:
 
-```
+```bash
 # subctl show all
 Cluster "cluster1"
  ✓ Showing Connections
@@ -62,7 +67,8 @@ service-discovery               localhost:5000                                  
 ```
 
 You can see the submariner pods in each cluster context using
-```
+
+```bash
 # export KUBECONFIG=$(find $(git rev-parse --show-toplevel)/output/kubeconfigs/ -type f -printf %p:)
 # kubectl get pods -n submariner-operator
 NAME                                             READY   STATUS    RESTARTS   AGE
@@ -78,11 +84,11 @@ submariner-routeagent-rlqpk                      1/1     Running   0          10
 
 you can connect to the gateway pod/container using:
 
-```
-kubectl exec -n submariner-operator --stdin --tty submariner-gateway-tkw4m  -- /bin/bash
+```bash
+# kubectl exec -n submariner-operator --stdin --tty submariner-gateway-tkw4m  -- /bin/bash
 ```
 
-#To setup an IP in IP interface on each cluster gateway do the following:*
+## To setup an IP in IP interface on each cluster gateway do the following
 
 Once in the gateway pod, bring down the vxlan-tunnel interface, take note of it's IP address
 as this is what you are going to assign to the new interface ipip0. Finally delete vxlan-tunnel
@@ -91,22 +97,21 @@ IP address.
 Please ensure to replace the IP addresses based on what is deployed for your cluster
 
 On Cluster1-worker:
-```
-ip link add name ipip0 type ipip local 172.18.0.8 remote 172.18.0.6
-ip link set ipip0 up
-ip addr add 240.18.0.8/8 dev ipip0
-ip route add 100.2.0.0/16 via 241.18.0.6 dev ipip0 table 100
-ip route add 10.2.0.0/16 via 241.18.0.6 dev ipip0 table 100
+
+```bash
+# ip link add name ipip0 type ipip local 172.18.0.8 remote 172.18.0.6
+# ip link set ipip0 up
+# ip addr add 240.18.0.8/8 dev ipip0
+# ip route add 100.2.0.0/16 via 241.18.0.6 dev ipip0 table 100
+# ip route add 10.2.0.0/16 via 241.18.0.6 dev ipip0 table 100
 ```
 
 On Cluster2-worker:
+
+```bash
+# ip link add name ipip0 type ipip local 172.18.0.6 remote 172.18.0.8
+# ip link set ipip0 up
+# ip addr add 240.18.0.6/8 dev ipip0
+# ip route add 100.1.0.0/16 via 241.18.0.8 dev ipip0 table 100
+# ip route add 10.1.0.0/16 via 241.18.0.8 dev ipip0 table 100
 ```
-ip link add name ipip0 type ipip local 172.18.0.6 remote 172.18.0.8
-ip link set ipip0 up
-ip addr add 240.18.0.6/8 dev ipip0
-ip route add 100.1.0.0/16 via 241.18.0.8 dev ipip0 table 100
-ip route add 10.1.0.0/16 via 241.18.0.8 dev ipip0 table 100
-```
-
-
-
