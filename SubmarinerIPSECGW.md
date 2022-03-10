@@ -1,8 +1,11 @@
 # Submariner IPSec Cable Driver Overview
 
 The goal of this guide is to provide an overview of the IPSec cable driver in Submariner and its equivalent
-manual configuration. The following is a topology overview for a simple Submariner deployment deployed with
-the IPSec cable Driver:
+manual configuration as well as an overview of transport mode configuration.
+
+## Submariner IPSec topology
+
+The following is a topology overview for a simple Submariner deployment deployed with the IPSec cable Driver:
 
 ```bash
 # make deploy using=lighthouse
