@@ -1,0 +1,6 @@
+@startyaml
+cable.drivers:
+    vxlan : vxlan.NewDriver
+    libreswan : libreswan.NewDriver
+    wireguard : wireguard.NewDriver
+@endyaml

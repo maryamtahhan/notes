@@ -9,9 +9,8 @@ namespace cable {
         + GetName() : string
         + Cleanup() : error
     }
-
     
-    class driver << (C,Aquamarine) >> {
+    class cable << (I,Aquamarine) >> {
        ~ DriverCreateFunc : func(localEndpoint *types.SubmarinerEndpoint, localCluster *types.SubmarinerCluster) (Driver, error)
        ~ drivers : map[string]DriverCreateFunc{}
        + Driver: interface
@@ -21,10 +20,10 @@ namespace cable {
        + GetDefaultCableDriver() : string
     }
 
-    class libreswan << (C,Aquamarine) >> {
+    class libreswan << (I,Aquamarine) >> {
         - libreswan : struct
         - specification : struct
-	- CableDriverName : string const
+	    - CableDriverName : string const
         - defaultNATTPort : string const
         - ipsecSpecEnvVarPrefix : string const
 
@@ -35,7 +34,6 @@ namespace cable {
         - runPluto() error
         - calculateOperationMode(remoteEndpoint *v1.EndpointSpec) operationMode
 
- 
         + Init() error
         + GetActiveConnections() ([]v1.Connection, error)
         + GetConnections() ([]v1.Connection, error)
@@ -46,16 +44,16 @@ namespace cable {
 
     }
 
-    class vxlan << (C,Aquamarine) >> {
+    class vxlan << (I,Aquamarine) >> {
         - vxlan : struct
         - vxlanIface : struct
         - vxlanAttributes : struct
-	- VxlanIface : string const
-	- VxlanOverhead : int const
-	- VxlanVTepNetworkPrefix : int const
-	- CableDriverName : string const
-	- TableID  : int const
-	- defaultPort   : int const
+        - VxlanIface : string const
+        - VxlanOverhead : int const
+        - VxlanVTepNetworkPrefix : int const
+        - CableDriverName : string const
+        - TableID  : int const
+        - defaultPort   : int const
 
         - createVxlanInterface(activeEndPoint string, port int) error
         - getVxlanVtepIPAddress(ipAddr string) (net.IP, error)
@@ -76,7 +74,7 @@ namespace cable {
         + DelRoute(ipAddressList []net.IPNet) error
     }      
 
-     class wireguard << (C,Aquamarine) >> {
+     class wireguard << (I,Aquamarine) >> {
         - CableDriverName : string const
         - DefaultDeviceName : string const
         - PublicKey : string const
@@ -103,13 +101,11 @@ namespace cable {
         + DisconnectFromEndpoint(remoteEndpoint *types.SubmarinerEndpoint) error
         + GetName() string
         + Cleanup() error
-
     }
-
 
 Driver <|-- libreswan
 Driver <|-- vxlan
 Driver <|-- wireguard
-driver - Driver
+cable - Driver
 }
 @enduml
