@@ -1,0 +1,115 @@
+@startuml
+namespace cable {
+    interface Driver  {
+        + Init() error
+        + GetActiveConnections() : ([]v1.Connection, error)
+        + GetConnections() : ([]v1.Connection, error)
+        + ConnectToEndpoint(endpointInfo *natdiscovery.NATEndpointInfo) : (string, error)
+        + DisconnectFromEndpoint(endpoint *types.SubmarinerEndpoint) : error
+        + GetName() : string
+        + Cleanup() : error
+    }
+
+    
+    class driver << (C,Aquamarine) >> {
+       ~ DriverCreateFunc : func(localEndpoint *types.SubmarinerEndpoint, localCluster *types.SubmarinerCluster) (Driver, error)
+       ~ drivers : map[string]DriverCreateFunc{}
+       + Driver: interface
+
+       + NewDriver(localEndpoint *types.SubmarinerEndpoint, localCluster *types.SubmarinerCluster) : (Driver, error)
+       + SetDefaultCableDriver(driver string)
+       + GetDefaultCableDriver() : string
+    }
+
+    class libreswan << (C,Aquamarine) >> {
+        - libreswan : struct
+        - specification : struct
+	- CableDriverName : string const
+        - defaultNATTPort : string const
+        - ipsecSpecEnvVarPrefix : string const
+
+        - refreshConnectionStatus() error
+        - bidirectionalConnectToEndpoint(connectionName string, endpointInfo *natdiscovery.NATEndpointInfo, leftSubnet string, rightSubnet string, rightNATTPort int32) error
+        - serverConnectToEndpoint(connectionName string, endpointInfo *natdiscovery.NATEndpointInfo, leftSubnet string, rightSubnet string, lsi int, rsi int) error
+        - clientConnectToEndpoint(connectionName string, endpointInfo *natdiscovery.NATEndpointInfo, leftSubnet string, rightSubnet string, rightNATTPort int32, lsi int, rsi int) error
+        - runPluto() error
+        - calculateOperationMode(remoteEndpoint *v1.EndpointSpec) operationMode
+
+ 
+        + Init() error
+        + GetActiveConnections() ([]v1.Connection, error)
+        + GetConnections() ([]v1.Connection, error)
+        + ConnectToEndpoint(endpointInfo *natdiscovery.NATEndpointInfo) (string, error)
+        + DisconnectFromEndpoint(endpoint *types.SubmarinerEndpoint) error
+        + GetName() string
+        + Cleanup() error
+
+    }
+
+    class vxlan << (C,Aquamarine) >> {
+        - vxlan : struct
+        - vxlanIface : struct
+        - vxlanAttributes : struct
+	- VxlanIface : string const
+	- VxlanOverhead : int const
+	- VxlanVTepNetworkPrefix : int const
+	- CableDriverName : string const
+	- TableID  : int const
+	- defaultPort   : int const
+
+        - createVxlanInterface(activeEndPoint string, port int) error
+        - getVxlanVtepIPAddress(ipAddr string) (net.IP, error)
+        - addIPRule() error
+        - configureIPAddress(ipAddress net.IP, mask net.IPMask) error
+
+        + Init() error
+        + GetActiveConnections() ([]v1.Connection, error)
+        + GetConnections() ([]v1.Connection, error)
+        + ConnectToEndpoint(endpointInfo *natdiscovery.NATEndpointInfo) (string, error)
+        + DisconnectFromEndpoint(remoteEndpoint *types.SubmarinerEndpoint) error
+        + GetName() string
+        + Cleanup() error
+       
+        + AddFDB(ipAddress net.IP, hwAddr string) error
+        + DelFDB(ipAddress net.IP, hwAddr string) error
+        + AddRoute(ipAddressList []net.IPNet, gwIP net.IP, ip net.IP) error
+        + DelRoute(ipAddressList []net.IPNet) error
+    }      
+
+     class wireguard << (C,Aquamarine) >> {
+        - CableDriverName : string const
+        - DefaultDeviceName : string const
+        - PublicKey : string const
+        - KeepAliveInterval : int const
+        - receiveBytes : string const
+        - transmitBytes : string const
+        - lastChecked : string const
+        - specEnvPrefix : string const
+        - specification : struct
+        - wireguard : struct
+
+        - setWGLink() error
+        - removePeer(key *wgtypes.Key) error
+        - peerByKey(key *wgtypes.Key) (*wgtypes.Peer, error)
+        - keyMismatch(cid string, key *wgtypes.Key) bool
+        - connectionByKey(key *wgtypes.Key) (*v1.Connection, error)
+        - updateConnectionForPeer(p *wgtypes.Peer, connection *v1.Connection)
+        - updatePeerStatus(c *v1.Connection, key *wgtypes.Key)
+
+        + Init() error
+        + GetActiveConnections() ([]v1.Connection, error)
+        + GetConnections() ([]v1.Connection, error)
+        + ConnectToEndpoint(endpointInfo *natdiscovery.NATEndpointInfo) (string, error)
+        + DisconnectFromEndpoint(remoteEndpoint *types.SubmarinerEndpoint) error
+        + GetName() string
+        + Cleanup() error
+
+    }
+
+
+Driver <|-- libreswan
+Driver <|-- vxlan
+Driver <|-- wireguard
+driver - Driver
+}
+@enduml
