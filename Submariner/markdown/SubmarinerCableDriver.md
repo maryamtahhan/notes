@@ -188,6 +188,24 @@ environment variables as well as Pod labels and annotations.
     }
 ```
 
+This information can be eventually be seen in the gateway description on the cluster after it's been synced to the Kubernetes API.
+
+```yaml
+  Local Endpoint:
+    Backend:  vxlan
+    backend_config:
+      Natt - Discovery - Port:  4490
+      Preferred - Server:       false
+      Udp - Port:               4500
+    cable_name:                 submariner-cable-cluster1-172-18-0-4
+    cluster_id:                 cluster1
+    Health Check IP:            10.1.0.1
+    Hostname:                   cluster1-worker
+    nat_enabled:                false
+    private_ip:                 172.18.0.4
+    public_ip:                  66.187.232.132
+```
+
 The gateway then creates the `cableengine.Engine` based on the local endpoint and cluster configuration it received from
 `submSpec`. It also creates a number of objects (e.g `natdiscovery.Interface`, `healthchecker.Interface`) that are used as
 part of the various Submariner watchers and syncers (e.g. `datastoresyncer.DatastoreSyncer`, `pod.NewGatewayPod` and
@@ -224,7 +242,7 @@ Data
 Events:  <none>
 ```
 
-The node that is the leader starts the cable engine, sets the Pod labels appropriately, starts the tunnel controller, starts the datasyncer, 
+The node that is the leader starts the cable engine, sets the Pod labels appropriately, starts the tunnel controller, starts the datasyncer,
 and starts the healthchecker.
 
 ### Submariner gateway initialization diagram
