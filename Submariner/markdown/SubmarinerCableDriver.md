@@ -264,7 +264,7 @@ cable engine.
 
 ## Gateway syncer
 
-The Gateway resource provides status about the connections, including healthcheck metrics. The
+The Gateway resource provides status about the connections, including health check metrics. The
 Gateway resource for a cluster is generated from the cable driver's list of connections. The
 resource gets updated every 5 seconds.
 
