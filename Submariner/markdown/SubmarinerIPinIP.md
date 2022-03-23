@@ -280,6 +280,8 @@ service-discovery               localhost:5000                                  
 
 ### Cluster 1 config
 
+> **_NOTE:_** src in the configurations below is set to the weave CNI address
+
 ```bash
 [root@cluster1-worker submariner]# cat setup.sh
 #!/bin/bash
