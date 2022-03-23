@@ -156,24 +156,24 @@ Deploy 4 VXLAN submariner clusters from submariner-operator using
 Check the deployment:
 
 ```bash
-# subctl show all
+[root@nfvsdn-06 submariner-operator]# subctl show all
 Cluster "cluster1"
  ✓ Showing Connections
-GATEWAY          CLUSTER   REMOTE IP    NAT  CABLE DRIVER  SUBNETS                    STATUS  RTT avg.
-cluster4-worker  cluster4  172.18.0.14  no   vxlan         100.4.0.0/16, 10.4.0.0/16  error   360.108µs
-cluster3-worker  cluster3  172.18.0.21  no   vxlan         100.3.0.0/16, 10.3.0.0/16  error   347.615µs
-cluster2-worker  cluster2  172.18.0.7   no   vxlan         100.2.0.0/16, 10.2.0.0/16  error   387.623µs
+GATEWAY          CLUSTER   REMOTE IP    NAT  CABLE DRIVER  SUBNETS                    STATUS     RTT avg.
+cluster2-worker  cluster2  172.18.0.21  no   vxlan         100.2.0.0/16, 10.2.0.0/16  connected  534.43µs
+cluster3-worker  cluster3  172.18.0.8   no   vxlan         100.3.0.0/16, 10.3.0.0/16  connected  463.324µs
+cluster4-worker  cluster4  172.18.0.4   no   vxlan         100.4.0.0/16, 10.4.0.0/16  connected  519.593µs
 
  ✓ Showing Endpoints
 CLUSTER ID                    ENDPOINT IP     PUBLIC IP       CABLE DRIVER        TYPE
-cluster1                      172.18.0.17     66.187.232.132  vxlan               local
-cluster4                      172.18.0.14     66.187.232.132  vxlan               remote
-cluster3                      172.18.0.21     66.187.232.132  vxlan               remote
-cluster2                      172.18.0.7      66.187.232.132  vxlan               remote
+cluster1                      172.18.0.10     66.187.232.132  vxlan               local
+cluster2                      172.18.0.21     66.187.232.132  vxlan               remote
+cluster3                      172.18.0.8      66.187.232.132  vxlan               remote
+cluster4                      172.18.0.4      66.187.232.132  vxlan               remote
 
  ✓ Showing Gateways
 NODE                            HA STATUS       SUMMARY
-cluster1-worker                 active          0 connections out of 3 are established
+cluster1-worker                 active          All connections (3) are established
 
     Discovered network details via Submariner:
         Network plugin:  weave-net
@@ -187,28 +187,28 @@ submariner-operator             localhost:5000                                  
 service-discovery               localhost:5000                                        local
  ✓ Showing versions
 
-Cluster "cluster3"
+Cluster "cluster2"
  ✓ Showing Connections
-GATEWAY          CLUSTER   REMOTE IP    NAT  CABLE DRIVER  SUBNETS                    STATUS  RTT avg.
-cluster1-worker  cluster1  172.18.0.17  no   vxlan         100.1.0.0/16, 10.1.0.0/16  error   363.136µs
-cluster4-worker  cluster4  172.18.0.14  no   vxlan         100.4.0.0/16, 10.4.0.0/16  error   377.228µs
-cluster2-worker  cluster2  172.18.0.7   yes  vxlan         100.2.0.0/16, 10.2.0.0/16  error   320.038µs
+GATEWAY          CLUSTER   REMOTE IP    NAT  CABLE DRIVER  SUBNETS                    STATUS     RTT avg.
+cluster1-worker  cluster1  172.18.0.10  no   vxlan         100.1.0.0/16, 10.1.0.0/16  connected  438.16µs
+cluster3-worker  cluster3  172.18.0.8   no   vxlan         100.3.0.0/16, 10.3.0.0/16  connected  433.341µs
+cluster4-worker  cluster4  172.18.0.4   no   vxlan         100.4.0.0/16, 10.4.0.0/16  connected  490.003µs
 
  ✓ Showing Endpoints
 CLUSTER ID                    ENDPOINT IP     PUBLIC IP       CABLE DRIVER        TYPE
-cluster3                      172.18.0.21     66.187.232.132  vxlan               local
-cluster1                      172.18.0.17     66.187.232.132  vxlan               remote
-cluster4                      172.18.0.14     66.187.232.132  vxlan               remote
-cluster2                      172.18.0.7      66.187.232.132  vxlan               remote
+cluster2                      172.18.0.21     66.187.232.132  vxlan               local
+cluster1                      172.18.0.10     66.187.232.132  vxlan               remote
+cluster3                      172.18.0.8      66.187.232.132  vxlan               remote
+cluster4                      172.18.0.4      66.187.232.132  vxlan               remote
 
  ✓ Showing Gateways
 NODE                            HA STATUS       SUMMARY
-cluster3-worker                 active          0 connections out of 3 are established
+cluster2-worker                 active          All connections (3) are established
 
     Discovered network details via Submariner:
         Network plugin:  weave-net
-        Service CIDRs:   [100.3.0.0/16]
-        Cluster CIDRs:   [10.3.0.0/16]
+        Service CIDRs:   [100.2.0.0/16]
+        Cluster CIDRs:   [10.2.0.0/16]
  ✓ Showing Network details
 
 COMPONENT                       REPOSITORY                                            VERSION
@@ -219,21 +219,21 @@ service-discovery               localhost:5000                                  
 
 Cluster "cluster4"
  ✓ Showing Connections
-GATEWAY          CLUSTER   REMOTE IP    NAT  CABLE DRIVER  SUBNETS                    STATUS  RTT avg.
-cluster1-worker  cluster1  172.18.0.17  no   vxlan         100.1.0.0/16, 10.1.0.0/16  error   348.276µs
-cluster3-worker  cluster3  172.18.0.21  no   vxlan         100.3.0.0/16, 10.3.0.0/16  error   377.784µs
-cluster2-worker  cluster2  172.18.0.7   no   vxlan         100.2.0.0/16, 10.2.0.0/16  error   359.657µs
+GATEWAY          CLUSTER   REMOTE IP    NAT  CABLE DRIVER  SUBNETS                    STATUS     RTT avg.
+cluster1-worker  cluster1  172.18.0.10  no   vxlan         100.1.0.0/16, 10.1.0.0/16  connected  510.161µs
+cluster2-worker  cluster2  172.18.0.21  no   vxlan         100.2.0.0/16, 10.2.0.0/16  connected  423.424µs
+cluster3-worker  cluster3  172.18.0.8   no   vxlan         100.3.0.0/16, 10.3.0.0/16  connected  469.942µs
 
  ✓ Showing Endpoints
 CLUSTER ID                    ENDPOINT IP     PUBLIC IP       CABLE DRIVER        TYPE
-cluster4                      172.18.0.14     66.187.232.132  vxlan               local
-cluster1                      172.18.0.17     66.187.232.132  vxlan               remote
-cluster3                      172.18.0.21     66.187.232.132  vxlan               remote
-cluster2                      172.18.0.7      66.187.232.132  vxlan               remote
+cluster4                      172.18.0.4      66.187.232.132  vxlan               local
+cluster1                      172.18.0.10     66.187.232.132  vxlan               remote
+cluster2                      172.18.0.21     66.187.232.132  vxlan               remote
+cluster3                      172.18.0.8      66.187.232.132  vxlan               remote
 
  ✓ Showing Gateways
 NODE                            HA STATUS       SUMMARY
-cluster4-worker                 active          0 connections out of 3 are established
+cluster4-worker                 active          All connections (3) are established
 
     Discovered network details via Submariner:
         Network plugin:  weave-net
@@ -247,28 +247,28 @@ submariner-operator             localhost:5000                                  
 service-discovery               localhost:5000                                        local
  ✓ Showing versions
 
-Cluster "cluster2"
+Cluster "cluster3"
  ✓ Showing Connections
-GATEWAY          CLUSTER   REMOTE IP    NAT  CABLE DRIVER  SUBNETS                    STATUS  RTT avg.
-cluster1-worker  cluster1  172.18.0.17  no   vxlan         100.1.0.0/16, 10.1.0.0/16  error   375.717µs
-cluster4-worker  cluster4  172.18.0.14  no   vxlan         100.4.0.0/16, 10.4.0.0/16  error   363.328µs
-cluster3-worker  cluster3  172.18.0.21  no   vxlan         100.3.0.0/16, 10.3.0.0/16  error   366.819µs
+GATEWAY          CLUSTER   REMOTE IP    NAT  CABLE DRIVER  SUBNETS                    STATUS     RTT avg.
+cluster2-worker  cluster2  172.18.0.21  no   vxlan         100.2.0.0/16, 10.2.0.0/16  connected  499.736µs
+cluster1-worker  cluster1  172.18.0.10  no   vxlan         100.1.0.0/16, 10.1.0.0/16  connected  504.869µs
+cluster4-worker  cluster4  172.18.0.4   no   vxlan         100.4.0.0/16, 10.4.0.0/16  connected  498.148µs
 
  ✓ Showing Endpoints
 CLUSTER ID                    ENDPOINT IP     PUBLIC IP       CABLE DRIVER        TYPE
-cluster2                      172.18.0.7      66.187.232.132  vxlan               local
-cluster1                      172.18.0.17     66.187.232.132  vxlan               remote
-cluster4                      172.18.0.14     66.187.232.132  vxlan               remote
-cluster3                      172.18.0.21     66.187.232.132  vxlan               remote
+cluster3                      172.18.0.8      66.187.232.132  vxlan               local
+cluster2                      172.18.0.21     66.187.232.132  vxlan               remote
+cluster1                      172.18.0.10     66.187.232.132  vxlan               remote
+cluster4                      172.18.0.4      66.187.232.132  vxlan               remote
 
  ✓ Showing Gateways
 NODE                            HA STATUS       SUMMARY
-cluster2-worker                 active          0 connections out of 3 are established
+cluster3-worker                 active          All connections (3) are established
 
     Discovered network details via Submariner:
         Network plugin:  weave-net
-        Service CIDRs:   [100.2.0.0/16]
-        Cluster CIDRs:   [10.2.0.0/16]
+        Service CIDRs:   [100.3.0.0/16]
+        Cluster CIDRs:   [10.3.0.0/16]
  ✓ Showing Network details
 
 COMPONENT                       REPOSITORY                                            VERSION
@@ -283,15 +283,16 @@ service-discovery               localhost:5000                                  
 ```bash
 [root@cluster1-worker submariner]# cat setup.sh
 #!/bin/bash
-ip link add name ipip0 type ipip local 172.18.0.17 remote any
+ip link del vxlan-tunnel
+ip link add name ipip0 type ipip local 172.18.0.10 remote any
 ip link set ipip0 up
-ip addr add 241.18.0.17/8 dev ipip0
-ip route add 10.2.0.0/16 encap ip id 100 dst 172.18.0.7 via 241.18.0.7 dev ipip0 table 100
-ip route add 100.2.0.0/16 encap ip id 100 dst 172.18.0.7 via 241.18.0.7 dev ipip0 table 100
-ip route add 10.3.0.0/16 encap ip id 100 dst 172.18.0.21 via 241.18.0.21 dev ipip0 table 100
-ip route add 100.3.0.0/16 encap ip id 100 dst 172.18.0.21 via 241.18.0.21 dev ipip0 table 100
-ip route add 10.4.0.0/16 encap ip id 100 dst 172.18.0.14 via 241.18.0.14 dev ipip0 table 100
-ip route add 100.4.0.0/16 encap ip id 100 dst 172.18.0.14 via 241.18.0.14 dev ipip0 table 100
+ip addr add 241.18.0.10/8 dev ipip0
+ip route add 10.2.0.0/16 encap ip id 100 dst 172.18.0.21 via 241.18.0.21 dev ipip0 table 100 metric 100 src 10.1.96.0
+ip route add 100.2.0.0/16 encap ip id 100 dst 172.18.0.21 via 241.18.0.21 dev ipip0 table 100 metric 100 src 10.1.96.0
+ip route add 10.3.0.0/16 encap ip id 100 dst 172.18.0.8 via 241.18.0.8 dev ipip0 table 100 metric 100 src 10.1.96.0
+ip route add 100.3.0.0/16 encap ip id 100 dst 172.18.0.8 via 241.18.0.8 dev ipip0 table 100 metric 100 src 10.1.96.0
+ip route add 10.4.0.0/16 encap ip id 100 dst 172.18.0.4 via 241.18.0.4 dev ipip0 table 100 metric 100 src 10.1.96.0
+ip route add 100.4.0.0/16 encap ip id 100 dst 172.18.0.4 via 241.18.0.4 dev ipip0 table 100 metric 100 src 10.1.96.0
 ```
 
 ### Cluster 2 config
@@ -299,15 +300,16 @@ ip route add 100.4.0.0/16 encap ip id 100 dst 172.18.0.14 via 241.18.0.14 dev ip
 ```bash
 [root@cluster2-worker submariner]# cat setup.sh
 #!/bin/bash
-ip link add name ipip0 type ipip local 172.18.0.7 remote any
+ip link del vxlan-tunnel
+ip link add name ipip0 type ipip local 172.18.0.21 remote any
 ip link set ipip0 up
-ip addr add 241.18.0.7/8 dev ipip0
-ip route add 10.1.0.0/16 encap ip id 100 dst 172.18.0.17 via 241.18.0.7 dev ipip0 table 100
-ip route add 100.1.0.0/16 encap ip id 100 dst 172.18.0.17 via 241.18.0.7 dev ipip0 table 100
-ip route add 10.3.0.0/16 encap ip id 100 dst 172.18.0.21 via 241.18.0.21 dev ipip0 table 100
-ip route add 100.3.0.0/16 encap ip id 100 dst 172.18.0.21 via 241.18.0.21 dev ipip0 table 100
-ip route add 10.4.0.0/16 encap ip id 100 dst 172.18.0.14 via 241.18.0.14 dev ipip0 table 100
-ip route add 100.4.0.0/16 encap ip id 100 dst 172.18.0.14 via 241.18.0.14 dev ipip0 table 100
+ip addr add 241.18.0.21/8 dev ipip0
+ip route add 10.1.0.0/16 encap ip id 100 dst 172.18.0.10 via 241.18.0.10 dev ipip0 table 100 metric 100 src 10.2.192.0
+ip route add 100.1.0.0/16 encap ip id 100 dst 172.18.0.10 via 241.18.0.10 dev ipip0 table 100 metric 100 src 10.2.192.0
+ip route add 10.3.0.0/16 encap ip id 100 dst 172.18.0.8 via 241.18.0.8 dev ipip0 table 100 metric 100 src 10.2.192.0
+ip route add 100.3.0.0/16 encap ip id 100 dst 172.18.0.8 via 241.18.0.8 dev ipip0 table 100 metric 100 src 10.2.192.0
+ip route add 10.4.0.0/16 encap ip id 100 dst 172.18.0.4 via 241.18.0.4 dev ipip0 table 100 metric 100 src 10.2.192.0
+ip route add 100.4.0.0/16 encap ip id 100 dst 172.18.0.4 via 241.18.0.4 dev ipip0 table 100 metric 100 src 10.2.192.0
 ```
 
 ### Cluster 3 config
@@ -315,15 +317,16 @@ ip route add 100.4.0.0/16 encap ip id 100 dst 172.18.0.14 via 241.18.0.14 dev ip
 ```bash
 [root@cluster3-worker submariner]# cat setup.sh
 #!/bin/bash
-ip link add name ipip0 type ipip local 172.18.0.21 remote any
+ip link del vxlan-tunnel
+ip link add name ipip0 type ipip local 172.18.0.8 remote any
 ip link set ipip0 up
-ip addr add 241.18.0.21/8 dev ipip0
-ip route add 10.1.0.0/16 encap ip id 100 dst 172.18.0.7 via 241.18.0.7 dev ipip0 table 100
-ip route add 100.1.0.0/16 encap ip id 100 dst 172.18.0.7 via 241.18.0.7 dev ipip0 table 100
-ip route add 10.2.0.0/16 encap ip id 100 dst 172.18.0.17 via 241.18.0.21 dev ipip0 table 100
-ip route add 100.2.0.0/16 encap ip id 100 dst 172.18.0.17 via 241.18.0.21 dev ipip0 table 100
-ip route add 10.4.0.0/16 encap ip id 100 dst 172.18.0.14 via 241.18.0.14 dev ipip0 table 100
-ip route add 100.4.0.0/16 encap ip id 100 dst 172.18.0.14 via 241.18.0.14 dev ipip0 table 100
+ip addr add 241.18.0.8/8 dev ipip0
+ip route add 10.1.0.0/16 encap ip id 100 dst 172.18.0.10 via 241.18.0.10 dev ipip0 table 100 metric 100 src 10.3.144.0
+ip route add 100.1.0.0/16 encap ip id 100 dst 172.18.0.10 via 241.18.0.10 dev ipip0 table 100 metric 100 src 10.3.144.0
+ip route add 10.2.0.0/16 encap ip id 100 dst 172.18.0.21 via 241.18.0.21 dev ipip0 table 100 metric 100 src 10.3.144.0
+ip route add 100.2.0.0/16 encap ip id 100 dst 172.18.0.21 via 241.18.0.21 dev ipip0 table 100 metric 100 src 10.3.144.0
+ip route add 10.4.0.0/16 encap ip id 100 dst 172.18.0.4 via 241.18.0.4 dev ipip0 table 100 metric 100 src 10.3.144.0
+ip route add 100.4.0.0/16 encap ip id 100 dst 172.18.0.4 via 241.18.0.4 dev ipip0 table 100 metric 100 src 10.3.144.0
 ```
 
 ### Cluster 4 config
@@ -331,13 +334,14 @@ ip route add 100.4.0.0/16 encap ip id 100 dst 172.18.0.14 via 241.18.0.14 dev ip
 ```bash
 [root@cluster4-worker submariner]# cat setup.sh
 #!/bin/bash
-ip link add name ipip0 type ipip local 172.18.0.14 remote any
+ip link del vxlan-tunnel
+ip link add name ipip0 type ipip local 172.18.0.4 remote any
 ip link set ipip0 up
-ip addr add 241.18.0.14/8 dev ipip0
-ip route add 10.1.0.0/16 encap ip id 100 dst 172.18.0.7 via 241.18.0.7 dev ipip0 table 100
-ip route add 100.1.0.0/16 encap ip id 100 dst 172.18.0.7 via 241.18.0.7 dev ipip0 table 100
-ip route add 10.2.0.0/16 encap ip id 100 dst 172.18.0.17 via 241.18.0.21 dev ipip0 table 100
-ip route add 100.2.0.0/16 encap ip id 100 dst 172.18.0.17 via 241.18.0.21 dev ipip0 table 100
-ip route add 10.3.0.0/16 encap ip id 100 dst 172.18.0.21 via 241.18.0.14 dev ipip0 table 100
-ip route add 100.3.0.0/16 encap ip id 100 dst 172.18.0.21 via 241.18.0.14 dev ipip0 table 100
+ip addr add 241.18.0.4/8 dev ipip0
+ip route add 10.1.0.0/16 encap ip id 100 dst 172.18.0.10 via 241.18.0.10 dev ipip0 table 100 metric 100 src 10.4.0.1
+ip route add 100.1.0.0/16 encap ip id 100 dst 172.18.0.10 via 241.18.0.10 dev ipip0 table 100 metric 100 src 10.4.0.1
+ip route add 10.2.0.0/16 encap ip id 100 dst 172.18.0.21 via 241.18.0.21 dev ipip0 table 100 metric 100 src 10.4.0.1
+ip route add 100.2.0.0/16 encap ip id 100 dst 172.18.0.21 via 241.18.0.21 dev ipip0 table 100 metric 100 src 10.4.0.1
+ip route add 10.3.0.0/16 encap ip id 100 dst 172.18.0.8 via 241.18.0.8 dev ipip0 table 100 metric 100 src 10.4.0.1
+ip route add 100.3.0.0/16 encap ip id 100 dst 172.18.0.8 via 241.18.0.8 dev ipip0 table 100 metric 100 src 10.4.0.1
 ```
