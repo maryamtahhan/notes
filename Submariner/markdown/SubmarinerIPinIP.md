@@ -278,6 +278,9 @@ service-discovery               localhost:5000                                  
  ✓ Showing versions
 ```
 
+Connect to the gateway pod in each cluster and run the following configurations:
+> **_NOTE:_** You will need to update the IP addresses based on what was deployed in your environment.
+
 ### Cluster 1 config
 
 > **_NOTE:_** src in the configurations below is set to the weave CNI address
