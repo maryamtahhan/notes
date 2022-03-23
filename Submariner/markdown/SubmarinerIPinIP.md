@@ -283,7 +283,7 @@ Connect to the gateway pod in each cluster and run the following configurations:
 
 ### Cluster 1 config
 
-> **_NOTE:_** src in the configurations below is set to the weave CNI address
+> **_NOTE:_** src in the configurations below is set to the weave CNI interface address
 
 ```bash
 [root@cluster1-worker submariner]# cat setup.sh
