@@ -301,6 +301,7 @@ Setup the IPSec secrets on both clusters as shown above.
 An alternative configuration with `ipsec whack` is shown below:
 
 > **_NOTE:_** to use the default Submariner vxlan port replace `udp/vxlan` in the configurations below with `udp/4500`
+> **_NOTE:_** cluster1-worker eth0 IP is 172.18.0.11 and cluster2-worker eth0 IP is 172.18.0.9
 
 <!-- markdownlint-disable line-length -->
 ```bash
@@ -326,15 +327,15 @@ An alternative configuration with `ipsec whack` is shown below:
 ```
 <!-- markdownlint-enable line-length -->
 
-Send traffic
+Start sending traffic (using iperf...)
 
-You can see the state of the configured tunnels using:
+You can see the state of the configured tunnels on the Gateways using:
 
 ```bash
 # ipsec whack --status
 ```
 
-To see the stats for the tunnels use:
+To see the stats for the tunnels on the Gateways using:
 
 ```bash
 #ipsec whack --trafficstatus
