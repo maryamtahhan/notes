@@ -210,11 +210,35 @@ You can verify connectivity and traffic flow across the tunnels by:
 
 > **_NOTE:_** This section assumes you've deployed Submariner with the VXLAN cable driver and adjusted the nattport to 4789
 
-1. Setup the secrets as shown above.
+### Setup the IPSec secrets using the Submariner PSK
 
-2. Configure ipsec.conf on both clusters:
+#### Configure the IPSec secret on cluster 1 GW
 
-   > **_NOTE:_** to use the default Submariner vxlan port replace `udp/vxlan` in the configurations below with `udp/4500`
+cat the PSK environment variable in the Submariner Gw.
+
+Configure the IPSec secret to use the PSK by adding it to `/etc/ipsec.d/test.secrets`:
+
+```bash
+[root@cluster1-worker submariner]# cat /etc/ipsec.d/test.secrets
+%any %any: PSK "yLvPmaM+/TxWHjkV5+upGHQWbwI+aif0ihchZpxght71zJFlXiKUBD31AXsLnGrt"
+```
+
+#### Configure the IPSec secret on cluster 2 GW
+
+cat the PSK environment variable in the Submariner Gw.
+
+Configure the IPSec secret to use the PSK by adding it to `/etc/ipsec.d/test.secrets`:
+
+```bash
+[root@cluster2-worker submariner]# cat /etc/ipsec.d/test.secrets
+%any %any: PSK "yLvPmaM+/TxWHjkV5+upGHQWbwI+aif0ihchZpxght71zJFlXiKUBD31AXsLnGrt"
+```
+
+### Configure ipsec.conf on both clusters
+
+You can either do the configuration listed here or follow the ipsec whack methodology.
+
+> **_NOTE:_** to use the default Submariner vxlan port replace `udp/vxlan` in the configurations below with `udp/4500`
 
    ```bash
    [root@cluster1-worker submariner]# cat /etc/ipsec.d/sub.conf
@@ -268,9 +292,15 @@ You can verify connectivity and traffic flow across the tunnels by:
       phase2alg=aes_gcm-null;modp2048
    ```
 
-3. Start Pluto and send traffic
+Start Pluto and send traffic
+
+### Configure IPSec transport mode using whack
+
+Setup the IPSec secrets on both clusters as shown above.
 
 An alternative configuration with `ipsec whack` is shown below:
+
+> **_NOTE:_** to use the default Submariner vxlan port replace `udp/vxlan` in the configurations below with `udp/4500`
 
 <!-- markdownlint-disable line-length -->
 ```bash
@@ -295,6 +325,20 @@ An alternative configuration with `ipsec whack` is shown below:
 [root@cluster2-worker]# ipsec whack --initiate --asynchronous --name submariner-cable-cluster1-172-18-0-11-1
 ```
 <!-- markdownlint-enable line-length -->
+
+Send traffic
+
+You can see the state of the configured tunnels using:
+
+```bash
+# ipsec whack --status
+```
+
+To see the stats for the tunnels use:
+
+```bash
+#ipsec whack --trafficstatus
+```
 
 ## IPSec manual configuration - transport mode - IP in IP over IPSec
 
