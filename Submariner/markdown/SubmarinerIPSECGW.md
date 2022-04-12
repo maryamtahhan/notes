@@ -301,6 +301,8 @@ Setup the IPSec secrets on both clusters as shown above.
 An alternative configuration with `ipsec whack` is shown below:
 
 > **_NOTE:_** to use the default Submariner vxlan port replace `udp/vxlan` in the configurations below with `udp/4500`
+> however to really see the VXLAN traffic being transported over IPSec in transport mode, it's recommended to
+> deploy Submariner with the nattport set to 4789
 > **_NOTE:_** cluster1-worker eth0 IP is 172.18.0.11 and cluster2-worker eth0 IP is 172.18.0.9
 
 <!-- markdownlint-disable line-length -->
