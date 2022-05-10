@@ -14,6 +14,8 @@ CNDP is built on top of standard Linux networking interfaces and takes advantage
 mechanisms (memory allocation, scheduling, drivers...). It aims to work with the kernel to accomplish
 a balance between flexibility (of deployment) and performance (of the packet processing application).
 
+The image below shows a sample of some of the libraries used for packet I/O with CNDP.
+
 ![CNDP Drivers](../images/cndp-lib-sample.png)
 
 > **_NOTE1:_** drivers/pmd is the terminology deployed by CNDP, however CNDP doesn't implement
@@ -25,7 +27,8 @@ Applications can interact with these "drivers" using one of two APIs:
 - pktdev API: for applications that want to interact with any of the underlying drivers and leverage
   CNDPs buffer management utilities.
 - xskdev API: a special API, that wraps the low level AF_XDP APIs. Applications can interact
-  directly with this API if they wish to use their own buffer management libraries/utilities.
+  directly with this API if they wish to use their own buffer management libraries/utilities with
+  AF_XDP.
 
 Both APIs abstract the complexities of the underlying "drivers" and low level APIs they interact with from
 the end user.
