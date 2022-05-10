@@ -19,7 +19,7 @@ The image below shows a sample of some of the libraries used for packet I/O with
 ![CNDP Drivers](../images/cndp-lib-sample.png)
 
 > **_NOTE1:_** drivers/pmd is the terminology deployed by CNDP, however CNDP doesn't implement
-> any drivers, it's simple an I/O API. CNDP leverages the Linux Kernel Drivers to manage networking
+> any drivers, it's a simple I/O API. CNDP leverages the Linux Kernel Drivers to manage networking
 > devices.
 
 Applications can interact with these "drivers" using one of two APIs:
