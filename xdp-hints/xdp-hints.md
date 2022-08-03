@@ -30,6 +30,8 @@ struct xdp_buff {
 };
 ```
 
+![xdp-buff](./images/xdp-buff.png)
+
 ```c
 /* Rx/Tx descriptor */
 struct xdp_desc {
