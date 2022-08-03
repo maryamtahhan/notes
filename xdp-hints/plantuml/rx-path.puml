@@ -1,0 +1,21 @@
+@startuml
+activate ixgbe
+ixgbe -> ixgbe : ixgbe_clean_rx_irq()
+activate ixgbe
+ixgbe -> ixgbe : ixgbe_run_xdp()
+activate ixgbe
+ixgbe -> "net/core/filter.c" : xdp_do_redirect()
+activate "net/core/filter.c"
+"net/core/filter.c" -> "net/core/filter.c" : __xdp_do_redirect_xsk()
+activate "net/core/filter.c"
+"net/core/filter.c" -> "net/xdp/xsk.c" : __xsk_map_redirect()
+activate "net/xdp/xsk.c"
+"net/xdp/xsk.c" -> "net/xdp/xsk.c": xsk_rcv()
+activate "net/xdp/xsk.c"
+"net/xdp/xsk.c" -> "net/xdp/xsk.c": __xsk_rcv()
+activate "net/xdp/xsk.c"
+"net/xdp/xsk.c" -> "net/xdp/xsk.c": __xsk_rcv_zc()
+activate "net/xdp/xsk.c"
+"net/xdp/xsk.c" -> "net/xdp/xsk_queue.h": xskq_prod_reserve_desc()
+activate "net/xdp/xsk_queue.h"
+@enduml
