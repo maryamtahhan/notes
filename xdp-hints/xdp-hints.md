@@ -72,8 +72,9 @@ function.
 
 ## __xsk_rcv_zc ()
 
-struct xdp_buff *xdp is replaced
-
+The information container in struct xdp_buff *xdp is used to configure a descriptor
+of type struct xdp_desc. This information in configured in the xskq_prod_reserve_desc()
+function.
 
 ```c
 static int __xsk_rcv_zc(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len)
@@ -90,6 +91,28 @@ static int __xsk_rcv_zc(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len)
     }
 
     xp_release(xskb);
+    return 0;
+}
+```
+
+## xskq_prod_reserve_desc()
+
+```c
+static inline int xskq_prod_reserve_desc(struct xsk_queue *q,
+                     u64 addr, u32 len, u32 flags)
+{
+    struct xdp_rxtx_ring *ring = (struct xdp_rxtx_ring *)q->ring;
+    u32 idx;
+
+    if (xskq_prod_is_full(q))
+        return -ENOBUFS;
+
+    /* A, matches D */
+    idx = q->cached_prod++ & q->ring_mask;
+    ring->desc[idx].addr = addr;
+    ring->desc[idx].len = len;
+    ring->desc[idx].options = flags;
+
     return 0;
 }
 ```
