@@ -5,6 +5,9 @@ to an application using AF_XDP.
 
 ![pass-hints](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/maryamtahhan/notes/main/xdp-hints/plantuml/rx-path.puml)
 
+> **_NOTE:_** xskq_prod_reserve_desc() will enqueue a descriptor to the AF_XDP
+Receive Ring - which will later be consumed by CNDPs xskdev API.
+
 ## struct xdp_buff
 
 xdp-hints are stored in the flags field in struct xdp_buff. The xdp_buff
