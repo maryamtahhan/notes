@@ -4,7 +4,9 @@ ixgbe -> ixgbe : ixgbe_clean_rx_irq()
 activate ixgbe
 ixgbe -> ixgbe : ixgbe_run_xdp()
 activate ixgbe
-ixgbe -> "net/core/filter.c" : xdp_do_redirect()
+ixgbe -> "include/linux/filter.h": bpf_prog_run_xdp()
+activate "include/linux/filter.h"
+"include/linux/filter.h" -> "net/core/filter.c" : xdp_do_redirect()
 activate "net/core/filter.c"
 "net/core/filter.c" -> "net/core/filter.c" : __xdp_do_redirect_xsk()
 activate "net/core/filter.c"
