@@ -36,6 +36,8 @@ Configure hugepages for DPDK:
 $ echo 4096 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
 ```
 
+Some forwarding application running on the SUT.
+
 ## Trex configuration
 
 For Latency testing Trex is configured to use DPDK and to pin the threads to certain cores (if a single host is used). An example configuration is shown below:
