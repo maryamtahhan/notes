@@ -1,0 +1,180 @@
+@startuml
+
+box "Host"
+box "Container 1"
+    participant "Txgen"
+    note left of Txgen #aqua
+     Txgen using AF_XDP
+     in Native mode
+    end note
+    participant "veth2"
+end box
+participant "net/xdp/xsk.c"
+participant "net/core/dev.c"
+participant "include/linux/netdevice.h"
+participant "veth1"
+note left of veth1 #aqua
+     veth1 xdp redirect
+     program attached
+    end note
+participant "net/core/filter.c"
+participant "net/core/filter.h"
+participant "net/core/xdp.c"
+participant "net/core/gro.h"
+participant "net/core/gro.c"
+participant "veth3"
+note right of veth3 #aqua
+     veth3 xdp pass
+     program attached
+    end note
+box "Container 2"
+    participant "veth4"
+    participant "cnet-graph"
+end box
+endbox
+
+autonumber
+Txgen -> "net/xdp/xsk.c" : send buffer ()
+note left
+xsk_ring_prod__reserve()
+xsk_ring_prod__submit ()
+sendto(xsk_socket__fd(xsk), ... MSG_DONTWAIT,...))
+end note
+
+activate "net/xdp/xsk.c"
+"net/xdp/xsk.c"->"net/xdp/xsk.c": xsk_sendmsg()
+activate "net/xdp/xsk.c"
+"net/xdp/xsk.c"->"net/xdp/xsk.c": __xsk_sendmsg()
+activate "net/xdp/xsk.c"
+"net/xdp/xsk.c"->"net/xdp/xsk.c": xsk_xmit()
+"net/xdp/xsk.c"-[#red]>"net/xdp/xsk.c": <font color=red> <b>xsk_generic_xmit()
+"net/xdp/xsk.c"-[#red]>"net/xdp/xsk.c": <font color=red> <b>xsk_build_skb()
+"net/xdp/xsk.c"->"net/core/dev.c":__dev_direct_xmit()
+activate "net/core/dev.c"
+"net/core/dev.c" -> "include/linux/netdevice.h": netdev_start_xmit()
+activate "include/linux/netdevice.h"
+"include/linux/netdevice.h" -> "include/linux/netdevice.h": __netdev_start_xmit()
+"include/linux/netdevice.h"-> veth2: ops->ndo_start_xmit()
+deactivate "include/linux/netdevice.h"
+deactivate "net/xdp/xsk.c"
+deactivate "net/xdp/xsk.c"
+deactivate "net/xdp/xsk.c"
+
+activate veth2
+veth2 -> veth2: veth_xmit()
+activate veth2
+veth2 -> veth2: veth_skb_is_eligible_for_gro()
+veth2 -> veth2: veth_forward_skb()
+veth2 -> "net/core/dev.c": __dev_forward_skb()
+activate "net/core/dev.c"
+"net/core/dev.c" -> "net/core/dev.c":  __dev_forward_skb2()
+"net/core/dev.c" -> "include/linux/netdevice.h": ____dev_forward_skb
+activate "include/linux/netdevice.h"
+"include/linux/netdevice.h" -->"net/core/dev.c": return
+deactivate "include/linux/netdevice.h"
+"net/core/dev.c" --> veth2: return
+deactivate "net/core/dev.c"
+deactivate "net/core/dev.c"
+
+veth2 -> veth2: veth_xdp_rx()
+veth2 -> veth2: ptr_ring_produce()
+note left
+ queue the skb to the shared ring with veth1
+end note
+veth2 -> veth2: __veth_xdp_flush()
+deactivate veth2
+deactivate veth2
+
+rnote over veth1 #orange
+interrupt
+endrnote
+activate veth1
+veth1 -> veth1: veth_poll ()
+veth1 -> veth1: <b>veth_xdp_rcv ()
+veth1 -> veth1: veth_is_xdp_frame()
+note right
+Buffer is NOT xdp_frame
+end note
+veth1 -> veth1: veth_xdp_rcv_skb()
+activate veth1
+note right
+AF_XDP: xsk_destruct_skb: <font color=purple> <b>xsk_destruct_skb()
+end note
+veth1 -> veth1: <font color=purple> <b>veth_convert_skb_to_xdp_buff()
+veth1 -> "net/core/filter.h": bpf_prog_run_xdp ()
+"net/core/filter.h" --> veth1: <font color=blue> <b>XDP_REDIRECT
+
+veth1 -[#blue]> veth1: (XDP_REDIRECT) veth_xdp_get ()
+note right
+consume_skb()
+end note
+veth1 -> "net/core/filter.c": xdp_do_redirect
+deactivate veth1
+deactivate veth1
+activate "net/core/filter.c"
+"net/core/filter.c"-> "net/core/filter.c": <font color=purple><b>__xdp_do_redirect_frame(ri, dev, xdp_convert_buff_to_frame(xdp), xdp_prog)
+"net/core/filter.c"-> "net/core/filter.c": xdp_do_flush
+deactivate "net/core/filter.c"
+
+
+rnote over veth3 #orange
+interrupt
+endrnote
+activate veth3
+veth3 -> veth3: veth_ndo_xdp_xmit()
+activate veth3
+veth3 -> veth3: veth_xdp_xmit()
+veth3 -> veth3: veth_xdp_to_ptr()
+veth3 -> veth3: __veth_xdp_flush
+veth3 -> veth3: veth_xdp_xmit()
+deactivate veth3
+deactivate veth3
+
+rnote over veth4 #orange
+interrupt
+endrnote
+activate veth4
+veth4 -> veth4: veth_poll()
+activate veth4
+veth4 -> veth4: veth_xdp_rcv()
+veth4 -> veth4: veth_is_xdp_frame()
+veth4 -> veth4: veth_ptr_to_xdp()
+note right
+veth_is_xdp_frame
+end note
+veth4 -> veth4: veth_xdp_rcv_one()
+veth4 -> veth4: veth_xdp_rcv_bulk_skb()
+veth4 -[#purple]> veth4: <font color=purple> <b> xdp_alloc_skb_bulk
+veth4 -[#purple]> "net/core/xdp.c":  <font color=purple> <b>__xdp_build_skb_from_frame()
+veth4 -> veth4: veth_xdp_rcv_bulk_skb()
+veth4 ->"net/core/gro.c": napi_gro_receive()
+deactivate veth4
+deactivate veth4
+"net/core/gro.c" -> "net/core/gro.c": napi_skb_finish(napi, skb, <b>dev_gro_receive(napi, skb));
+note right
+napi_skb_finish eventually calls netif_receive_skb_list_internal()
+end note
+"net/core/gro.h" -> "net/core/dev.c": netif_receive_skb_list_internal()
+activate "net/core/dev.c"
+"net/core/dev.c" -> "net/core/dev.c": __netif_receive_skb_list()
+"net/core/dev.c" -> "net/core/dev.c": __netif_receive_skb_list_core()
+"net/core/dev.c" -> "net/core/dev.c": __netif_receive_skb_core()
+"net/core/dev.c" -> "net/core/dev.c": do_xdp_generic()
+"net/core/dev.c" -> "net/core/filter.c": xdp_do_generic_redirect()
+deactivate "net/core/dev.c"
+activate "net/core/filter.c"
+"net/core/filter.c" -> "net/core/filter.c": xdp_do_generic_redirect_map()
+note right
+calls dev_map_generic_redirect and redirects the skb to the af_xdp socket
+end note
+deactivate "net/core/filter.c"
+
+activate "net/xdp/xsk.c"
+"net/xdp/xsk.c" -> "net/xdp/xsk.c": xsk_generic_rcv()
+"net/xdp/xsk.c" -> "net/xdp/xsk.c": xsk_rcv_check()
+"net/xdp/xsk.c" -> "net/xdp/xsk.c": __xsk_rcv()
+"net/xdp/xsk.c" -> "net/xdp/xsk.c": xsk_copy_xdp()
+"net/xdp/xsk.c" -> "net/xdp/xsk.c": __xsk_rcv_zc()
+"net/xdp/xsk.c" -> "net/xdp/xsk.c": xsk_flush()
+autonumber stop
+@enduml
