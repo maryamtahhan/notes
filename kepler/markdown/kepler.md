@@ -56,7 +56,7 @@ The role of the bpf exporter includes:
 "Perfbuf is a collection of per-CPU circular buffers, which allows to efficiently exchange data
 between kernel and user-space. It works great in practice, but due to its per-CPU design it
 has two major short-comings that prove to be inconvenient in practice: inefficient use of
-memory and event re-ordering" [[1]].
+memory and event re-ordering" [[1]]. These shortcomings can be overcome by using a ringbuf.
 
 ## Collector Manager
 
