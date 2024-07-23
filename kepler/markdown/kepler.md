@@ -108,7 +108,7 @@ ID of 1 and a PID of 1). If GPU statistics are available per process,
 the stats are extended to include GPU compute and memory utilization.
 
 Node energy stats are also retrieved (if collection is supported). These stats
-include the underlying component stats (core, uncore, dram, package),
+include the underlying component stats (core, uncore, dram, package, gpus, ...),
 as well as the overall platform stats (Idle + Dynamic energy), and the
 the process energy consumption. the process energy consumption is estimated
 using its resource utilization and the node components energy consumption.
