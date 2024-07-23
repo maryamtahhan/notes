@@ -24,7 +24,7 @@ The exporter performs the following operations:
   from the platform as well as its components (dram, uncore, core, package).
 * Creates a bpf exporter (role explained below).
 * Creates a collector manager to collect and expose the collected metrics (role explained below).
-* Creates a http server that services incoming requests.
+* Creates a http endpoint that exposes metrics (to Prometheus).
 
 ## BPF Exporter
 
